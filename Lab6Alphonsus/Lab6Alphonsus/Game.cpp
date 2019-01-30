@@ -26,7 +26,7 @@ Game::~Game()
 {
 }
 
-
+int radius = 20;
 
 
 void Game::run()
@@ -54,6 +54,33 @@ void Game::friction()
 	if (ballVelocity.length() < 0.6) // if the length gets to small it make sure the if statment will be executed and the ball stops
 	{
 		ballVelocity = { 0.0f, 0.0f, 0.0f }; // makes it stop
+		m_ballStop = true;
+	}
+}
+void Game::collisions(MyVector3 t_positionA, MyVector3 &t_velocityA, MyVector3 t_positionB, MyVector3 &t_velocityB)
+{
+	MyVector3 space = ballPosition - redBallPosition;
+	collision = false;
+	if (space.length() <= radius * 2)
+	{
+		MyVector3 A = t_velocityA;
+		MyVector3 B = t_velocityB;
+		t_velocityA = A.rejection(space) + B.projection(space);
+		t_velocityB = B.rejection(space) + A.projection(space);
+	}
+}
+void Game::collisionDetection(MyVector3 t_positionA, MyVector3 &t_velocityA, MyVector3 t_positionB, MyVector3 &t_velocityB)
+{
+	MyVector3 redSpace = ballPosition - redBallPosition;
+	MyVector3 space = ballPosition - redBallPosition;
+
+	if (redSpace.length() <= radius * 2)
+	{
+	collision = false;
+	MyVector3 A = t_velocityA;
+	MyVector3 B = t_velocityB;
+	t_velocityA = A.rejection(space) + B.projection(space);
+	t_velocityB = B.rejection(space) + A.projection(space);
 	}
 }
 void Game::border()
@@ -70,7 +97,8 @@ void Game::border()
 }
 void Game::ballMovement()
 {
-	ballPosition = ballPosition + ballVelocity; // makes sure the ball moves
+	ballPosition = ballPosition + ballVelocity;
+	redBallPosition = redBallPosition + redBallVelocity;
 }
 void Game::setUpBackgroud()
 {
@@ -86,13 +114,26 @@ void Game::setUpBackgroud()
 	cueBall.setRadius(20); // the size of the ball
 	cueBall.setFillColor(sf::Color::White); // the colour of the ball is white
 
+	ballVertex = sf::Vertex(ballPosition, sf::Color::Green);
+	mouseVertex = sf::Vertex(mousePosition, sf::Color::Green);
+	aimingLine.append(ballVertex);
+	aimingLine.append(mouseVertex);
+
 	
 }
+void Game::passBall(sf::Color t_colour, MyVector3 t_ballPosition)
+{
+	cueBall.setPosition(t_ballPosition.x - radius, t_ballPosition.y - radius);
+	cueBall.setFillColor(t_colour);
+	m_window.draw(cueBall);
+}
+
+
+
 void Game::setUpAim() // setting up the aiming
 {
 	mouseVertex.position = static_cast<sf::Vector2f>(mousePosition); // sets the starting position of the vertext as the mouse
 	ballVertex.position = static_cast<sf::Vector2f>(ballPosition); // sets the starting position of the vertex as the ball
-	aimingLine.clear(); // clears the line
 	aimingLine.append(mouseVertex);
 	aimingLine.append(ballVertex);
 
@@ -111,9 +152,10 @@ void Game::processEvents()
 		{
 			m_window.close();
 		}
-		if (event.type == sf::Event::MouseButtonPressed && m_ballStop)
+		if (event.type == sf::Event::MouseButtonPressed && m_ballStop == true)
 		{
 			m_aim = true; // begins aiming
+			
 			mousePosition = MyVector3{ static_cast<double>(event.mouseButton.x), static_cast<double>(event.mouseButton.y), 0.0 };
 		}
 		if (event.type == sf::Event::MouseMoved && m_aim)
@@ -125,6 +167,7 @@ void Game::processEvents()
 			m_aim = false;
 			ballVelocity = ballPosition - mousePosition; // gets the distance
 			ballVelocity = ballVelocity * POWER; // adds power to the balll on release
+			m_ballStop = false;
 		}
 		if (sf::Event::KeyPressed == event.type) //user key press
 		{
@@ -142,9 +185,15 @@ void Game::processEvents()
 /// <param name="t_deltaTime">time interval per frame</param>
 void Game::update(sf::Time t_deltaTime)
 {
+	
 	ballMovement(); // makes sure the ball moves and is animated
 	friction(); // makes sure the ball slows down due to friction
 	border(); // makes sure the cushion does its job
+	if (collision = true)
+	{
+		collisions(ballPosition, ballVelocity, redBallPosition, redBallVelocity); // animates collision
+		collisionDetection(ballPosition, ballVelocity, redBallPosition, redBallVelocity);
+	}
 	if (m_exitGame)
 	{
 		m_window.close();
@@ -157,12 +206,20 @@ void Game::update(sf::Time t_deltaTime)
 void Game::render()
 {
 	cueBall.setPosition(ballPosition);
-
+	
+	aimingLine.clear(); // clears the line
 	m_window.clear(sf::Color::Black);
 	m_window.draw(cushion); // draws the cushion
 	m_window.draw(table);// draws the table
-	m_window.draw(aimingLine); // draws the line
-	m_window.draw(cueBall); // draws the cue ball
+	
+
+	passBall(sf::Color::Color(155, 9, 31), redBallPosition);
+	passBall(sf::Color::White, ballPosition);
+
+	if (m_aim == true)
+	{
+		m_window.draw(aimingLine); // draws the line
+	}
 	m_window.display();
 	
 }
