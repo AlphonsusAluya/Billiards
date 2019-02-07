@@ -50,37 +50,57 @@ void Game::run()
 void Game::friction()
 {
 	ballVelocity = ballVelocity * 0.996; // slows the ball down
+	redBallVelocity = redBallVelocity * 0.996; // slows the red ball down
+	yellowBallVelocity = yellowBallVelocity * 0.996; //  slows the yellow ball down
 
-	if (ballVelocity.length() < 0.6) // if the length gets to small it make sure the if statment will be executed and the ball stops
+	if (ballVelocity.length() < 0.6 && redBallVelocity.length() < 0.6 && yellowBallVelocity.length() < 0.6) // if the length gets to small it make sure the if statment will be executed and the ball stops
 	{
 		ballVelocity = { 0.0f, 0.0f, 0.0f }; // makes it stop
+		redBallVelocity = { 0.0f, 0.0f, 0.0f }; // makes it stop
+		yellowBallVelocity = { 0.0f, 0.0f, 0.0f };
 		m_ballStop = true;
 	}
 }
+/// <summary>
+/// 
+/// </summary>
+/// <param name="t_positionA"></param>
+/// <param name="t_velocityA"></param>
+/// <param name="t_positionB"></param>
+/// <param name="t_velocityB"></param>
 void Game::collisions(MyVector3 t_positionA, MyVector3 &t_velocityA, MyVector3 t_positionB, MyVector3 &t_velocityB)
 {
+	MyVector3 space = t_positionA - t_positionB;
+
+	std::cout << "collosion";
+	MyVector3 boom = t_velocityA;
+	t_velocityA = boom.rejection(space) + t_velocityB.projection(space);
+	t_velocityB = t_velocityB.rejection(space) + boom.projection(space);
+	//t_velocityA.reverseX();
+
+}
+void Game::collisionDetection()
+{
+	MyVector3 yellowSpace = yellowBallPosition - ballPosition;
 	MyVector3 space = ballPosition - redBallPosition;
-	collision = false;
+	MyVector3 redSpace = redBallPosition - yellowBallPosition;
+
 	if (space.length() <= radius * 2)
 	{
-		MyVector3 A = t_velocityA;
-		MyVector3 B = t_velocityB;
-		t_velocityA = A.rejection(space) + B.projection(space);
-		t_velocityB = B.rejection(space) + A.projection(space);
+
+		collisions(ballPosition, ballVelocity, redBallPosition, redBallVelocity);
 	}
-}
-void Game::collisionDetection(MyVector3 t_positionA, MyVector3 &t_velocityA, MyVector3 t_positionB, MyVector3 &t_velocityB)
-{
-	MyVector3 redSpace = ballPosition - redBallPosition;
-	MyVector3 space = ballPosition - redBallPosition;
+
+	if (yellowSpace.length() <= radius * 2)
+	{
+
+		collisions(ballPosition, ballVelocity, yellowBallPosition, yellowBallVelocity);
+	}
 
 	if (redSpace.length() <= radius * 2)
 	{
-	collision = false;
-	MyVector3 A = t_velocityA;
-	MyVector3 B = t_velocityB;
-	t_velocityA = A.rejection(space) + B.projection(space);
-	t_velocityB = B.rejection(space) + A.projection(space);
+
+		collisions(yellowBallPosition, yellowBallVelocity, redBallPosition, redBallVelocity);
 	}
 }
 void Game::border()
@@ -94,11 +114,30 @@ void Game::border()
 	{
 		ballVelocity.reverseY(); // the y values gets reversed
 	}
+
+	if (redBallPosition.x >= 750 || redBallPosition.x <= 15) // the sides of the table(the cushion)
+	{
+		redBallVelocity.reverseX(); // it gets reversed
+	}
+
+	if (redBallPosition.y <= 10 || redBallPosition.y >= 550) // the top and bottom cushions
+	{
+		redBallVelocity.reverseY(); // the y values gets reversed
+	}
+
+	if (yellowBallPosition.x >= 750 || yellowBallPosition.x <= 15) // the sides of the table(the cushion)
+	{
+		yellowBallVelocity.reverseX(); // it gets reversed
+	}
+
+	if (yellowBallPosition.y <= 10 || yellowBallPosition.y >= 550) // the top and bottom cushions
+	{
+		yellowBallVelocity.reverseY(); // the y values gets reversed
+	}
 }
-void Game::ballMovement()
+void Game::ballMovement(MyVector3 &t_ballPosition, MyVector3 &t_ballVelocity)
 {
-	ballPosition = ballPosition + ballVelocity;
-	redBallPosition = redBallPosition + redBallVelocity;
+	t_ballPosition = t_ballPosition + t_ballVelocity;
 }
 void Game::setUpBackgroud()
 {
@@ -119,7 +158,7 @@ void Game::setUpBackgroud()
 	aimingLine.append(ballVertex);
 	aimingLine.append(mouseVertex);
 
-	
+
 }
 void Game::passBall(sf::Color t_colour, MyVector3 t_ballPosition)
 {
@@ -155,7 +194,7 @@ void Game::processEvents()
 		if (event.type == sf::Event::MouseButtonPressed && m_ballStop == true)
 		{
 			m_aim = true; // begins aiming
-			
+
 			mousePosition = MyVector3{ static_cast<double>(event.mouseButton.x), static_cast<double>(event.mouseButton.y), 0.0 };
 		}
 		if (event.type == sf::Event::MouseMoved && m_aim)
@@ -168,6 +207,7 @@ void Game::processEvents()
 			ballVelocity = ballPosition - mousePosition; // gets the distance
 			ballVelocity = ballVelocity * POWER; // adds power to the balll on release
 			m_ballStop = false;
+			m_aimDone = true;
 		}
 		if (sf::Event::KeyPressed == event.type) //user key press
 		{
@@ -185,19 +225,27 @@ void Game::processEvents()
 /// <param name="t_deltaTime">time interval per frame</param>
 void Game::update(sf::Time t_deltaTime)
 {
-	
-	ballMovement(); // makes sure the ball moves and is animated
+
+	// makes sure the ball moves and is animated
 	friction(); // makes sure the ball slows down due to friction
 	border(); // makes sure the cushion does its job
-	if (collision = true)
+
+
+	collisionDetection();
+	if (m_aimDone == true)
 	{
-		collisions(ballPosition, ballVelocity, redBallPosition, redBallVelocity); // animates collision
-		collisionDetection(ballPosition, ballVelocity, redBallPosition, redBallVelocity);
+		ballMovement(redBallPosition, redBallVelocity);
+		ballMovement(ballPosition, ballVelocity);
+		ballMovement(yellowBallPosition, yellowBallVelocity);
+
 	}
+
+
 	if (m_exitGame)
 	{
 		m_window.close();
 	}
+
 }
 
 /// <summary>
@@ -206,13 +254,13 @@ void Game::update(sf::Time t_deltaTime)
 void Game::render()
 {
 	cueBall.setPosition(ballPosition);
-	
+
 	aimingLine.clear(); // clears the line
 	m_window.clear(sf::Color::Black);
 	m_window.draw(cushion); // draws the cushion
 	m_window.draw(table);// draws the table
-	
 
+	passBall(sf::Color::Yellow, yellowBallPosition);
 	passBall(sf::Color::Color(155, 9, 31), redBallPosition);
 	passBall(sf::Color::White, ballPosition);
 
@@ -221,6 +269,5 @@ void Game::render()
 		m_window.draw(aimingLine); // draws the line
 	}
 	m_window.display();
-	
-}
 
+}

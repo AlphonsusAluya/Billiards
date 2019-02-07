@@ -1,3 +1,0 @@
-﻿  Game.cpp
-c:\users\c00237736\desktop\lab6alphonsus\lab6alphonsus\game.cpp(126): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  Lab6Alphonsus.vcxproj -> C:\Users\C00237736\Desktop\Lab6Alphonsus\Debug\Lab6Alphonsus.exe

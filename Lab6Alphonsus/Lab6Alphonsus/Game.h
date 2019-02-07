@@ -1,4 +1,4 @@
-// author Peter Lowe
+// author alphonsus
 #ifndef GAME
 #define GAME
 
@@ -10,8 +10,8 @@ class Game
 public:
 	Game();
 	~Game();
-	
-	
+
+
 	void run();
 
 private:
@@ -21,6 +21,9 @@ private:
 
 	MyVector3 redBallPosition = { 50.0f, 100.0f, 0.0f };
 	MyVector3 redBallVelocity = { 0.0f, 0.0f, 0.0f };
+
+	MyVector3 yellowBallPosition = { 300.0f, 200.0f, 0.0f };
+	MyVector3 yellowBallVelocity = { 0.0f, 0.0f, 0.0f };
 
 	sf::RectangleShape table;
 	sf::RectangleShape cushion;
@@ -37,24 +40,25 @@ private:
 
 	void friction();
 	void collisions(MyVector3 t_positionA, MyVector3 &t_velocityA, MyVector3 t_positionB, MyVector3 &t_velocityB);
-	void collisionDetection(MyVector3 t_positionA, MyVector3 &t_velocityA, MyVector3 t_positionB, MyVector3 &t_velocityB);
+	void collisionDetection();
 	void border();
-	void ballMovement();
+	void ballMovement(MyVector3 &t_ballPosition, MyVector3 &t_ballVelocity);
 	void setUpBackgroud();
 	void passBall(sf::Color, MyVector3);
 	void setUpAim();
 	void processEvents();
 	void update(sf::Time t_deltaTime);
 	void render();
-	
-	
+
+
 
 	sf::RenderWindow m_window; // main SFML window
-	
+
 	bool m_exitGame; // control exiting game
 	bool m_ballStop = false;
 	bool m_aim;
 	bool collision = false;
+	bool m_aimDone = false;
 
 };
 
