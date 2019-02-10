@@ -25,6 +25,13 @@ private:
 	MyVector3 yellowBallPosition = { 300.0f, 200.0f, 0.0f };
 	MyVector3 yellowBallVelocity = { 0.0f, 0.0f, 0.0f };
 
+	MyVector3 pocketPositionOne = { 0,0,0 };
+	MyVector3 pocketPositionTwo = { 400,0,0 };
+	MyVector3 pocketPositionThree = { 800,0,0 };
+	MyVector3 pocketPositionFour = { 0,600,0 };
+	MyVector3 pocketPositionFive = { 400,600,0 };
+	MyVector3 pocketPositionSix = { 800,600,0 };
+
 	sf::RectangleShape table;
 	sf::RectangleShape cushion;
 	sf::CircleShape cueBall;

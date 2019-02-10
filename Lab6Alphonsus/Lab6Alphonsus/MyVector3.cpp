@@ -193,7 +193,7 @@ double MyVector3::lengthSquared() const
 
 double MyVector3::dot(const MyVector3 t_other) const
 {
-	const float dotProduct = (x * t_other.x) * (y * t_other.y) * (z * t_other.z);
+	const float dotProduct = (x * t_other.x) + (y * t_other.y) + (z * t_other.z);
 	return dotProduct;
 }
 
@@ -240,17 +240,19 @@ void MyVector3::normalise()
 MyVector3 MyVector3::projection(const MyVector3 t_onto) const
 {
 	MyVector3 vecterOne = { x, y, z };
-	float scale = vecterOne.dot(t_onto) / (t_onto.length() * t_onto.length());
-	float projectionx = scale * t_onto.x;
-	float projectiony = scale * t_onto.y;
-	float projectionz = scale * t_onto.z;
-	return MyVector3(projectionx, projectiony, projectionz);
+	double lengthSq = t_onto.lengthSquared();
+	double dotProduct = dot(t_onto);
+	double scale{ 1.0 };
+	if (lengthSq != 0)
+	{
+		scale = dotProduct / lengthSq;
+	}
+
+	return t_onto * scale;
 }
 
 MyVector3 MyVector3::rejection(const MyVector3 t_onto) const
 {
-	MyVector3 vectorOne = { x, y, z };
-	MyVector3 rejection = t_onto - vectorOne.projection(t_onto);
-	return MyVector3(rejection);
+	return this ->operator-(projection(t_onto));
 }
 

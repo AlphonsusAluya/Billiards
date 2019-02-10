@@ -264,6 +264,13 @@ void Game::render()
 	passBall(sf::Color::Color(155, 9, 31), redBallPosition);
 	passBall(sf::Color::White, ballPosition);
 
+	passBall(sf::Color::Black, pocketPositionOne);
+	passBall(sf::Color::Black, pocketPositionTwo);
+	passBall(sf::Color::Black, pocketPositionThree);
+	passBall(sf::Color::Black, pocketPositionFour);
+	passBall(sf::Color::Black, pocketPositionFive);
+	passBall(sf::Color::Black, pocketPositionSix);
+
 	if (m_aim == true)
 	{
 		m_window.draw(aimingLine); // draws the line
