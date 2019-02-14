@@ -1,0 +1,5 @@
+﻿  Game.cpp
+c:\users\alphonsus\desktop\billiardslab6\18-lab6-billiards-alphonsusaluya\lab6alphonsus\lab6alphonsus\game.cpp(208): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  main.cpp
+  Generating Code...
+  Lab6Alphonsus.vcxproj -> C:\Users\Alphonsus\Desktop\BilliardsLab6\18-lab6-billiards-AlphonsusAluya\Lab6Alphonsus\Debug\Lab6Alphonsus.exe

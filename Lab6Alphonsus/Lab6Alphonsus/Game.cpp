@@ -59,6 +59,10 @@ void Game::friction()
 		redBallVelocity = { 0.0f, 0.0f, 0.0f }; // makes it stop
 		yellowBallVelocity = { 0.0f, 0.0f, 0.0f };
 		m_ballStop = true;
+		if (m_ballStop == true && m_score == false)
+		{
+			m_turns = !m_turns;
+		}
 	}
 }
 /// <summary>
@@ -87,8 +91,15 @@ void Game::collisionDetection()
 
 	if (space.length() <= radius * 2)
 	{
-
 		collisions(ballPosition, ballVelocity, redBallPosition, redBallVelocity);
+		if (m_turns == true)
+		{
+			m_yellowHitsWhite = true;
+		}
+		else
+		{
+			m_whiteHitsYellow = true;
+		}
 	}
 
 	if (yellowSpace.length() <= radius * 2)
@@ -101,6 +112,33 @@ void Game::collisionDetection()
 	{
 
 		collisions(yellowBallPosition, yellowBallVelocity, redBallPosition, redBallVelocity);
+	}
+	for (int i = 0; i < 6; i++)
+	{
+		MyVector3 whiteSpacePocket = ballPosition - pocketPostion[i];
+		MyVector3 redSpacePocket = redBallPosition - pocketPostion[i];
+		MyVector3 yellowSpacePocket = yellowBallPosition - pocketPostion[i];
+
+		if (whiteSpacePocket.length() <= radius * 2)
+		{
+			ballVelocity = { 0.0f, 0.0f, 0.0f };
+			ballPosition = { 1000, 1000, 0 };
+			m_whitePocketed = true;
+		}
+
+		if (redSpacePocket.length() <= radius * 2)
+		{
+			redBallVelocity = { 0.0f, 0.0f, 0.0f };
+			redBallPosition = { 1000, 1000, 0 };
+			m_redPocketed = true;
+		}
+
+		if (yellowSpacePocket.length() <= radius * 2)
+		{
+			yellowBallVelocity = { 0.0f, 0.0f, 0.0f };
+			yellowBallPosition = { 1000, 1000, 0 };
+			m_yellowPocketed = true;
+		}
 	}
 }
 void Game::border()
@@ -135,6 +173,30 @@ void Game::border()
 		yellowBallVelocity.reverseY(); // the y values gets reversed
 	}
 }
+void Game::pottedBalls()
+{
+	if (m_whitePocketed == true)
+	{
+		if (m_turns == false)
+		{
+			ballPosition = newBallPosition;
+			m_whitePocketed == false;
+		}
+
+		if (m_turns == true)
+		{
+			if(m_score == false)
+			{
+				ballPosition = newBallPosition;
+				m_whitePocketed == false;
+			}
+		}
+	}
+	if (m_yellowPocketed == true)
+	{
+		if()
+	}
+}
 void Game::ballMovement(MyVector3 &t_ballPosition, MyVector3 &t_ballVelocity)
 {
 	t_ballPosition = t_ballPosition + t_ballVelocity;
@@ -154,6 +216,7 @@ void Game::setUpBackgroud()
 	cueBall.setFillColor(sf::Color::White); // the colour of the ball is white
 
 	ballVertex = sf::Vertex(ballPosition, sf::Color::Green);
+	yellowBallVertex = sf::Vertex(yellowBallPosition, sf::Color::Green);
 	mouseVertex = sf::Vertex(mousePosition, sf::Color::Green);
 	aimingLine.append(ballVertex);
 	aimingLine.append(mouseVertex);
@@ -168,13 +231,25 @@ void Game::passBall(sf::Color t_colour, MyVector3 t_ballPosition)
 }
 
 
-
 void Game::setUpAim() // setting up the aiming
 {
 	mouseVertex.position = static_cast<sf::Vector2f>(mousePosition); // sets the starting position of the vertext as the mouse
-	ballVertex.position = static_cast<sf::Vector2f>(ballPosition); // sets the starting position of the vertex as the ball
-	aimingLine.append(mouseVertex);
-	aimingLine.append(ballVertex);
+	if (m_turns == false)
+	{
+		ballVertex.position = static_cast<sf::Vector2f>(ballPosition); // sets the starting position of the vertex as the ball
+		aimingLine.clear();
+		aimingLine.append(mouseVertex);
+		aimingLine.append(ballVertex);
+	}
+
+	if (m_turns == true)
+	{
+		yellowBallVertex = static_cast<sf::Vector2f>(yellowBallPosition);
+		aimingLine.clear();
+		aimingLine.append(mouseVertex);
+		aimingLine.append(yellowBallVertex);
+	}
+	
 
 }
 /// <summary>
@@ -187,27 +262,30 @@ void Game::processEvents()
 	sf::Event event;
 	while (m_window.pollEvent(event))
 	{
-		if (sf::Event::Closed == event.type) // window message
+		if (m_ballStop && m_turns == false)
 		{
-			m_window.close();
-		}
-		if (event.type == sf::Event::MouseButtonPressed && m_ballStop == true)
-		{
-			m_aim = true; // begins aiming
+			if (sf::Event::Closed == event.type) // window message
+			{
+				m_window.close();
+			}
+			if (event.type == sf::Event::MouseButtonPressed && m_ballStop == true)
+			{
+				m_aim = true; // begins aiming
 
-			mousePosition = MyVector3{ static_cast<double>(event.mouseButton.x), static_cast<double>(event.mouseButton.y), 0.0 };
-		}
-		if (event.type == sf::Event::MouseMoved && m_aim)
-		{
-			mousePosition = MyVector3{ static_cast<double>(event.mouseMove.x), static_cast<double>(event.mouseMove.y), 0.0 };
-		}
-		if (m_aim && event.type == sf::Event::MouseButtonReleased)
-		{
-			m_aim = false;
-			ballVelocity = ballPosition - mousePosition; // gets the distance
-			ballVelocity = ballVelocity * POWER; // adds power to the balll on release
-			m_ballStop = false;
-			m_aimDone = true;
+				mousePosition = MyVector3{ static_cast<double>(event.mouseButton.x), static_cast<double>(event.mouseButton.y), 0.0 };
+			}
+			if (event.type == sf::Event::MouseMoved && m_aim)
+			{
+				mousePosition = MyVector3{ static_cast<double>(event.mouseMove.x), static_cast<double>(event.mouseMove.y), 0.0 };
+			}
+			if (m_aim && event.type == sf::Event::MouseButtonReleased)
+			{
+				m_aim = false;
+				ballVelocity = ballPosition - mousePosition; // gets the distance
+				ballVelocity = ballVelocity * POWER; // adds power to the balll on release
+				m_ballStop = false;
+				m_aimDone = true;
+			}
 		}
 		if (sf::Event::KeyPressed == event.type) //user key press
 		{
