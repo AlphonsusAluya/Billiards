@@ -1,5 +1,6 @@
 ﻿  Game.cpp
-c:\users\alphonsus\desktop\billiardslab6\18-lab6-billiards-alphonsusaluya\lab6alphonsus\lab6alphonsus\game.cpp(206): warning C4553: '==': result of expression not used; did you intend '='?
-c:\users\alphonsus\desktop\billiardslab6\18-lab6-billiards-alphonsusaluya\lab6alphonsus\lab6alphonsus\game.cpp(214): warning C4553: '==': result of expression not used; did you intend '='?
-c:\users\alphonsus\desktop\billiardslab6\18-lab6-billiards-alphonsusaluya\lab6alphonsus\lab6alphonsus\game.cpp(268): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\alphonsus\desktop\billiardslab6\18-lab6-billiards-alphonsusaluya\lab6alphonsus\lab6alphonsus\game.cpp(347): warning C4553: '==': result of expression not used; did you intend '='?
+c:\users\alphonsus\desktop\billiardslab6\18-lab6-billiards-alphonsusaluya\lab6alphonsus\lab6alphonsus\game.cpp(355): warning C4553: '==': result of expression not used; did you intend '='?
+c:\users\alphonsus\desktop\billiardslab6\18-lab6-billiards-alphonsusaluya\lab6alphonsus\lab6alphonsus\game.cpp(409): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\alphonsus\desktop\billiardslab6\18-lab6-billiards-alphonsusaluya\lab6alphonsus\lab6alphonsus\game.cpp(542): warning C4101: 'm_score': unreferenced local variable
   Lab6Alphonsus.vcxproj -> C:\Users\Alphonsus\Desktop\BilliardsLab6\18-lab6-billiards-AlphonsusAluya\Lab6Alphonsus\Debug\Lab6Alphonsus.exe

@@ -18,6 +18,7 @@ Game::Game() :
 	m_window{ sf::VideoMode{ 800, 600, 32 }, "SFML Game" },
 	m_exitGame{ false } //when true game will exit
 {
+	loadMessages();
 	setUpBackgroud();
 }
 
@@ -47,22 +48,32 @@ void Game::run()
 		render(); // as many as possible
 	}
 }
-void Game::friction()
+void Game::friction(MyVector3 &t_ballVelocity)
 {
-	ballVelocity = ballVelocity * 0.996; // slows the ball down
-	redBallVelocity = redBallVelocity * 0.996; // slows the red ball down
-	yellowBallVelocity = yellowBallVelocity * 0.996; //  slows the yellow ball down
+	t_ballVelocity = t_ballVelocity * 0.996; // slows the balls down
+	
 
-	if (ballVelocity.length() < 0.6 && redBallVelocity.length() < 0.6 && yellowBallVelocity.length() < 0.6) // if the length gets to small it make sure the if statment will be executed and the ball stops
+
+}
+void Game::allBallStopped()
+{
+	if (ballVelocity.length() < 0.6 && redBallVelocity.length() < 0.6 && yellowBallVelocity.length() < 0.6 && !m_ballStop) // if the length gets to small it make sure the if statment will be executed and the ball stops
 	{
 		ballVelocity = { 0.0f, 0.0f, 0.0f }; // makes it stop
 		redBallVelocity = { 0.0f, 0.0f, 0.0f }; // makes it stop
 		yellowBallVelocity = { 0.0f, 0.0f, 0.0f }; // makes it stop
+		cannon();
+		scoring();
+		displayMessages();
+		pottedBalls();
 		m_ballStop = true;
-		if (m_ballStop == true)
+		if (m_score == false)
 		{
+			m_yellowSpawn = false;
+			m_whiteSpawn = false;
 			m_turns = !m_turns;
 		}
+		boolReset();
 	}
 }
 /// <summary>
@@ -76,7 +87,6 @@ void Game::collisions(MyVector3 t_positionA, MyVector3 &t_velocityA, MyVector3 t
 {
 	MyVector3 space = t_positionA - t_positionB;
 
-	std::cout << "collosion";
 	MyVector3 boom = t_velocityA;
 	t_velocityA = boom.rejection(space) + t_velocityB.projection(space);
 	t_velocityB = t_velocityB.rejection(space) + boom.projection(space);
@@ -223,6 +233,27 @@ void Game::scoring()
 		}
 	}
 }
+void Game::cannon()
+{
+	if (m_turns == true)
+	{
+		if (m_cannon == true)
+		{
+			m_cannon = true;
+			m_score = true;
+			theScoreForYellow = theScoreForYellow + 2;
+		}
+	}
+	else if (m_turns == false)
+	{
+		if (m_cannon == true)
+		{
+			m_score = true;
+			m_cannon = true;
+			theScoreForWhite = theScoreForWhite + 2;
+		}
+	}
+}
 void Game::cannonDetection()
 {
 	if (m_turns == false)
@@ -230,6 +261,8 @@ void Game::cannonDetection()
 		if (m_whiteHitsYellow && m_whiteHitsRed)
 		{
 			m_cannon = true;
+			m_score = true;
+			theScoreForWhite = theScoreForWhite + 2;
 		}
 	}
 
@@ -238,11 +271,13 @@ void Game::cannonDetection()
 		if (m_yellowHitsWhite && m_yellowHitsRed)
 		{
 			m_cannon = true;
+			m_score = true;
+			theScoreForYellow = theScoreForYellow + 2;
 		}
 	}
 	if (m_cannon == true)
 	{
-		std::cout << "well";
+		
 	}
 }
 void Game::border()
@@ -382,7 +417,7 @@ void Game::setUpAim() // setting up the aiming
 	mouseVertex.position = static_cast<sf::Vector2f>(mousePosition); // sets the starting position of the vertext as the mouse
 	if(m_turns == false)
 	{
-		yellowBallVertex = static_cast<sf::Vector2f>(yellowBallPosition);
+		ballVertex = static_cast<sf::Vector2f>(ballPosition);
 	}
 	if (m_turns == false)
 	{
@@ -404,6 +439,107 @@ void Game::setUpAim() // setting up the aiming
 	}
 	
 
+}
+void Game::displayMessages()
+{
+	display = "White has " + std::to_string(theScoreForWhite) + " points " "\n" + "Yellow has " + std::to_string(theScoreForYellow) + " points" + "\n";
+	if (m_turns == false)
+	{
+		std::cout << "Whites turn " << "\n";
+		if (m_whiteHitsRed)
+		{
+			std::cout << "White hit red " << "\n";
+		}
+		if (m_whiteHitsYellow)
+		{
+			std::cout << "White hit yellow " << "\n";
+		}
+		if (m_nothingHit || m_foulPotting)
+		{
+			std::cout << " foul pot two points for yellow " << "\n";
+		}
+		if (m_cannon)
+		{
+			std::cout << " white Cannon " << "\n";
+		}
+	}
+	if (m_turns == true)
+	{
+		std::cout << "Whites turn " << "\n";
+		if (m_yellowHitsRed)
+		{
+			std::cout << "Yellow hit red " << "\n";
+		}
+		if (m_yellowHitsWhite)
+		{
+			std::cout << "Yellow hit white " << "\n";
+		}
+		if (m_nothingHit || m_foulPotting)
+		{
+			std::cout << " foul pot two points for white " << "\n";
+		}
+		if (m_cannon)
+		{
+			std::cout << " Yellow Cannon " << "\n";
+		}
+	}
+
+	if (m_redPotByWhite)
+	{
+		std::cout << "White pots red " << "2 points " << "\n";
+	}
+	if (m_redPotByYellow)
+	{
+		std::cout << "Yellow pots red " << "2 points " << "\n";
+	}
+	if (m_whitePotByYellow)
+	{
+		std::cout << "Yellow pots White " << "2 points " << "\n";
+	}
+	if (m_yellowPotByWhite)
+	{
+		std::cout << "White pots yellow  " << "2 points " << "\n";
+	}
+	if (m_inOffYellow == true)
+	{
+		std::cout << "Yellow in-Off gets " << InOff << "\n";
+	}
+	if (m_inOffWhite == true)
+	{
+		std::cout << "White in-Off gets " << InOff << "\n";
+	}
+
+	std::cout << "White currently has " << theScoreForWhite << "points" << "\n";
+	std::cout << "Yellow currently has " << theScoreForYellow << "points" << "\n";
+}
+void Game::loadMessages()
+{
+	if (!font.loadFromFile("ASSETS/FONTS/BebasNeue.otf"))
+	{
+		std::cout << "error ";
+	}
+
+	messages.setFont(font);
+	messages.setCharacterSize(20);
+	messages.setFillColor(sf::Color::White);
+	messages.setPosition(30, 40);
+}
+void Game::boolReset()
+{
+	bool m_whiteHitsRed = false;
+	bool m_yellowHitsRed = false;
+	bool m_whiteHitsYellow = false;
+	bool m_yellowHitsWhite = false;
+	bool m_cannon = false;
+	bool m_foulPotting = false;
+	bool m_nothingHit = false;
+	bool m_redPotByWhite = false;
+	bool m_redPotByYellow = false;
+	bool m_whitePotByYellow = false;
+	bool m_yellowPotByWhite = false;
+	bool m_inOffWhite = false;
+	bool m_inOffYellow = false;
+	bool m_score;
 }
 /// <summary>
 /// handle user and system events/ input
@@ -483,8 +619,14 @@ void Game::update(sf::Time t_deltaTime)
 {
 
 	// makes sure the ball moves and is animated
-	friction(); // makes sure the ball slows down due to friction
+	friction(ballVelocity); // makes sure the ball slows down due to friction
+	friction(redBallVelocity); // makes sure the red ball slows down due to friction
+	friction(yellowBallVelocity); // makes sure the yellow ball slows down due to friction
 	border(); // makes sure the cushion does its job
+	cannonDetection();
+	allBallStopped();
+	setUpAim();
+	
 
 
 	collisionDetection();
@@ -531,6 +673,13 @@ void Game::render()
 	{
 		m_window.draw(aimingLine); // draws the line
 	}
+
+	if (m_ballStop)
+	{
+		m_window.draw(messages);
+	}
+
+	messages.setString(display);
 	m_window.display();
 
 }

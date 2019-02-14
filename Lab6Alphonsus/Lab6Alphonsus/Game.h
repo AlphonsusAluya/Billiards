@@ -52,12 +52,17 @@ private:
 	int theScoreForYellow = 0;
 	int InOff = 0;
 
+	std::string display;
+	sf::Font font;
+	sf::Text messages;
 
 
-	void friction();
+	void friction(MyVector3 &t_ballVelocity);
+	void allBallStopped();
 	void collisions(MyVector3 t_positionA, MyVector3 &t_velocityA, MyVector3 t_positionB, MyVector3 &t_velocityB);
 	void collisionDetection();
 	void scoring();
+	void cannon();
 	void cannonDetection();
 	void border();
 	void fouls();
@@ -66,6 +71,9 @@ private:
 	void setUpBackgroud();
 	void passBall(sf::Color, MyVector3);
 	void setUpAim();
+	void displayMessages();
+	void loadMessages();
+	void boolReset();
 	void processEvents();
 	void update(sf::Time t_deltaTime);
 	void render();
@@ -76,8 +84,8 @@ private:
 
 	bool m_exitGame; // control exiting game
 	bool m_ballStop = false;
-	bool m_aim;
-	bool m_score;
+	bool m_aim = false;
+	bool m_score = false;
 	bool collision = false;
 	bool m_aimDone = false;
 	bool m_turns = false;
