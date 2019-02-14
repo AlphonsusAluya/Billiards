@@ -43,7 +43,7 @@ private:
 	sf::Vertex mouseVertex;
 	sf::Vertex ballVertex;
 	sf::Vertex yellowBallVertex;
-	sf::VertexArray aimingLine;
+	sf::VertexArray aimingLine{ sf::Lines };
 
 	MyVector3 Radius{ 20, 20, 0 };
 
@@ -54,6 +54,8 @@ private:
 	void friction();
 	void collisions(MyVector3 t_positionA, MyVector3 &t_velocityA, MyVector3 t_positionB, MyVector3 &t_velocityB);
 	void collisionDetection();
+	void cannon();
+	void cannonDetection();
 	void border();
 	void pottedBalls();
 	void ballMovement(MyVector3 &t_ballPosition, MyVector3 &t_ballVelocity);
@@ -82,6 +84,8 @@ private:
 	bool m_yellowHitsRed = false;
 	bool m_whiteHitsYellow = false;
 	bool m_yellowHitsWhite = false;
+	bool m_cannon = false;
+
 
 };
 
