@@ -142,6 +142,87 @@ void Game::collisionDetection()
 		}
 	}
 }
+void Game::scoring()
+{
+	if (m_whitePocketed == true)
+	{
+		if (m_yellowSpawn == false && m_turns == true)
+		{
+			theScoreForYellow = theScoreForYellow + 2;
+			m_whitePotByYellow = true;
+			m_yellowSpawn = true;
+			m_score = true;
+		}
+		if (m_turns == false)
+		{
+			if (m_whiteHitsYellow)
+			{
+				m_score = true;
+				theScoreForWhite = theScoreForWhite + 2;
+				InOff = 2;
+				m_inOffWhite = true;
+			}
+			if (!m_whiteHitsYellow && m_whiteHitsRed)
+			{
+				m_score = true;
+				theScoreForWhite = theScoreForWhite + 3;
+				InOff = 3;
+				m_inOffWhite = true;
+			}
+			if (!m_whiteHitsRed && !m_whiteHitsYellow)
+			{
+				m_foulPotting = true;
+			}
+		}
+
+	}
+	if (m_redPocketed == true)
+	{
+		if (m_turns == false)
+		{
+			m_redPotByWhite = true;
+			m_score = true;
+			theScoreForWhite = theScoreForWhite + 3;
+		}
+		else
+		{
+			m_redPotByYellow = true;
+			m_score = true;
+			theScoreForYellow = theScoreForYellow + 3;
+		}
+	}
+	if (m_yellowPocketed == true)
+	{
+		if (m_whiteSpawn == false && m_turns == false)
+		{
+			m_whiteSpawn = true;
+			m_score = true;
+			m_yellowPotByWhite = true;
+			theScoreForWhite = theScoreForWhite + 2;
+		}
+		if (m_turns == true)
+		{
+			if (m_yellowHitsWhite)
+			{
+				m_score = true;
+				theScoreForYellow = theScoreForYellow + 2;
+				InOff = 2;
+				m_inOffYellow = true;
+			}
+			if (!m_whiteHitsYellow && m_whiteHitsRed)
+			{
+				m_score = true;
+				theScoreForYellow = theScoreForYellow + 3;
+				InOff = 3;
+				m_inOffYellow = true;
+			}
+			if (!m_whiteHitsRed && !m_whiteHitsYellow)
+			{
+				m_foulPotting = true;
+			}
+		}
+	}
+}
 void Game::cannonDetection()
 {
 	if (m_turns == false)
@@ -194,6 +275,31 @@ void Game::border()
 	if (yellowBallPosition.y <= 10 || yellowBallPosition.y >= 550) // the top and bottom cushions
 	{
 		yellowBallVelocity.reverseY(); // the y values gets reversed
+	}
+}
+void Game::fouls()
+{
+	if (m_turns == true)
+	{
+		if (!m_yellowHitsRed && !m_yellowHitsWhite)
+		{
+			m_nothingHit = true;
+		}
+		if (m_nothingHit || m_foulPotting)
+		{
+			theScoreForWhite = theScoreForWhite + 2;
+		}
+	}
+	if (m_turns == false)
+	{
+		if (!m_whiteHitsRed && !m_whiteHitsYellow)
+		{
+			m_nothingHit = true;
+		}
+		if (m_nothingHit || m_foulPotting)
+		{
+			theScoreForYellow = theScoreForYellow + 2;
+		}
 	}
 }
 void Game::pottedBalls()

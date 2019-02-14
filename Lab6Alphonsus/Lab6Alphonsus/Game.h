@@ -48,15 +48,19 @@ private:
 	MyVector3 Radius{ 20, 20, 0 };
 
 	const double POWER = 0.06;
+	int theScoreForWhite = 0;
+	int theScoreForYellow = 0;
+	int InOff = 0;
 
 
 
 	void friction();
 	void collisions(MyVector3 t_positionA, MyVector3 &t_velocityA, MyVector3 t_positionB, MyVector3 &t_velocityB);
 	void collisionDetection();
-	void cannon();
+	void scoring();
 	void cannonDetection();
 	void border();
+	void fouls();
 	void pottedBalls();
 	void ballMovement(MyVector3 &t_ballPosition, MyVector3 &t_ballVelocity);
 	void setUpBackgroud();
@@ -85,6 +89,16 @@ private:
 	bool m_whiteHitsYellow = false;
 	bool m_yellowHitsWhite = false;
 	bool m_cannon = false;
+	bool m_foulPotting = false;
+	bool m_nothingHit = false;
+	bool m_redPotByWhite = false;
+	bool m_redPotByYellow = false;
+	bool m_whitePotByYellow = false;
+	bool m_yellowPotByWhite = false;
+	bool m_inOffWhite = false;
+	bool m_inOffYellow = false;
+	bool m_whiteSpawn = false;
+	bool m_yellowSpawn = false;
 
 
 };
