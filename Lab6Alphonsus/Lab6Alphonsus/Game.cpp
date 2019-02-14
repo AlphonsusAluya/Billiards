@@ -1,9 +1,9 @@
 // Alphonsus Aluya
 // C00237736
 // estimated time: 8 hours
-// actual time ??
-// issues: none
-// Bugs: none
+// actual time 17 hours
+// issues: point system is not working properly and some of it wont load
+// Bugs: mouse does not draw
 
 #include "Game.h"
 #include <iostream>
@@ -62,10 +62,10 @@ void Game::allBallStopped()
 		ballVelocity = { 0.0f, 0.0f, 0.0f }; // makes it stop
 		redBallVelocity = { 0.0f, 0.0f, 0.0f }; // makes it stop
 		yellowBallVelocity = { 0.0f, 0.0f, 0.0f }; // makes it stop
-		cannon();
-		scoring();
-		displayMessages();
-		pottedBalls();
+		cannon(); // so it only functions when it stops
+		scoring(); // so it only functions when it stops
+		displayMessages();// so it only displays when it stops
+		pottedBalls(); // so it only functions when it stops
 		m_ballStop = true;
 		if (m_score == false)
 		{
@@ -73,16 +73,10 @@ void Game::allBallStopped()
 			m_whiteSpawn = false;
 			m_turns = !m_turns;
 		}
-		boolReset();
+		boolReset(); // resetting of the bools
 	}
 }
-/// <summary>
-/// 
-/// </summary>
-/// <param name="t_positionA"></param>
-/// <param name="t_velocityA"></param>
-/// <param name="t_positionB"></param>
-/// <param name="t_velocityB"></param>
+
 void Game::collisions(MyVector3 t_positionA, MyVector3 &t_velocityA, MyVector3 t_positionB, MyVector3 &t_velocityB)
 {
 	MyVector3 space = t_positionA - t_positionB;
@@ -90,7 +84,7 @@ void Game::collisions(MyVector3 t_positionA, MyVector3 &t_velocityA, MyVector3 t
 	MyVector3 boom = t_velocityA;
 	t_velocityA = boom.rejection(space) + t_velocityB.projection(space);
 	t_velocityB = t_velocityB.rejection(space) + boom.projection(space);
-	//t_velocityA.reverseX();
+	
 
 }
 void Game::collisionDetection()
@@ -104,25 +98,25 @@ void Game::collisionDetection()
 		collisions(ballPosition, ballVelocity, yellowBallPosition, yellowBallVelocity);
 		if (m_turns == true)
 		{
-			m_yellowHitsWhite = true;
+			m_yellowHitsWhite = true; // detection of yellow and white
 		}
 		else
 		{
-			m_whiteHitsYellow = true;
+			m_whiteHitsYellow = true; // detection of white and yellow
 		}
 	}
 
 	if (space.length() <= radius * 2)
 	{
 		collisions(ballPosition, ballVelocity, redBallPosition, redBallVelocity);
-		m_whiteHitsRed = true;
+		m_whiteHitsRed = true; // detection of white and red
 	}
 
 	if (redSpace.length() <= radius * 2)
 	{
 
 		collisions(yellowBallPosition, yellowBallVelocity, redBallPosition, redBallVelocity);
-		m_yellowHitsRed = true;
+		m_yellowHitsRed = true; // detection of yellow and red
 	}
 	for (int i = 0; i < 6; i++)
 	{
@@ -133,26 +127,26 @@ void Game::collisionDetection()
 		if (whiteSpacePocket.length() <= radius * 2)
 		{
 			ballVelocity = { 0.0f, 0.0f, 0.0f };
-			ballPosition = { 1000, 1000, 0 };
+			ballPosition = { 1000, 1000, 0 }; // so it disappears when pocketed
 			m_whitePocketed = true;
 		}
 
 		if (redSpacePocket.length() <= radius * 2)
 		{
 			redBallVelocity = { 0.0f, 0.0f, 0.0f };
-			redBallPosition = { 1000, 1000, 0 };
+			redBallPosition = { 1000, 1000, 0 }; // so it disappears when pocketed
 			m_redPocketed = true;
 		}
 
 		if (yellowSpacePocket.length() <= radius * 2)
 		{
 			yellowBallVelocity = { 0.0f, 0.0f, 0.0f };
-			yellowBallPosition = { 1000, 1000, 0 };
+			yellowBallPosition = { 1000, 1000, 0 }; // so it disappears when pocketed
 			m_yellowPocketed = true;
 		}
 	}
 }
-void Game::scoring()
+void Game::scoring() // all the points
 {
 	if (m_whitePocketed == true)
 	{
@@ -233,7 +227,7 @@ void Game::scoring()
 		}
 	}
 }
-void Game::cannon()
+void Game::cannon() // cannon functions
 {
 	if (m_turns == true)
 	{
@@ -280,7 +274,7 @@ void Game::cannonDetection()
 		
 	}
 }
-void Game::border()
+void Game::border() // so the balls stay within the boundries
 {
 	if (ballPosition.x >= 750 || ballPosition.x <= 15) // the sides of the table(the cushion)
 	{
@@ -312,7 +306,7 @@ void Game::border()
 		yellowBallVelocity.reverseY(); // the y values gets reversed
 	}
 }
-void Game::fouls()
+void Game::fouls() // the foul shots
 {
 	if (m_turns == true)
 	{
@@ -337,7 +331,7 @@ void Game::fouls()
 		}
 	}
 }
-void Game::pottedBalls()
+void Game::pottedBalls() // the respawn of the balls
 {
 	if (m_whitePocketed == true)
 	{
@@ -380,7 +374,7 @@ void Game::pottedBalls()
 }
 void Game::ballMovement(MyVector3 &t_ballPosition, MyVector3 &t_ballVelocity)
 {
-	t_ballPosition = t_ballPosition + t_ballVelocity;
+	t_ballPosition = t_ballPosition + t_ballVelocity; // so the ball moves
 }
 
 void Game::setUpBackgroud()
@@ -415,7 +409,7 @@ void Game::passBall(sf::Color t_colour, MyVector3 t_ballPosition)
 void Game::setUpAim() // setting up the aiming
 {
 	mouseVertex.position = static_cast<sf::Vector2f>(mousePosition); // sets the starting position of the vertext as the mouse
-	if(m_turns == false)
+	if(m_turns == false) 
 	{
 		ballVertex = static_cast<sf::Vector2f>(ballPosition);
 	}
@@ -440,7 +434,7 @@ void Game::setUpAim() // setting up the aiming
 	
 
 }
-void Game::displayMessages()
+void Game::displayMessages() // displays all the messages
 {
 	display = "White has " + std::to_string(theScoreForWhite) + " points " "\n" + "Yellow has " + std::to_string(theScoreForYellow) + " points" + "\n";
 	if (m_turns == false)
@@ -524,7 +518,7 @@ void Game::loadMessages()
 	messages.setFillColor(sf::Color::White);
 	messages.setPosition(30, 40);
 }
-void Game::boolReset()
+void Game::boolReset() // resetes the bools
 {
 	bool m_whiteHitsRed = false;
 	bool m_yellowHitsRed = false;

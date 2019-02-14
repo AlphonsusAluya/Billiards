@@ -15,17 +15,17 @@ public:
 	void run();
 
 private:
-	MyVector3 newBallPosition = { 200.0f, 300.0f, 0.0f };
-	MyVector3 ballPosition = { 200.0f, 300.0f, 0.0f };
+	MyVector3 newBallPosition = { 600.0f, 300.0f, 0.0f };
+	MyVector3 ballPosition = { 600.0f, 300.0f, 0.0f };
 	MyVector3 ballVelocity = { 0.0f, 0.0f, 0.0f };
 	MyVector3 mousePosition = { 0.0f, 0.0f, 0.0f };
 
-	MyVector3 newRedBallPosition = { 50.0f, 100.0f, 0.0f };
+	MyVector3 newRedBallPosition = { 400.0f, 300.0f, 0.0f };
 	MyVector3 redBallPosition = { 50.0f, 100.0f, 0.0f };
 	MyVector3 redBallVelocity = { 0.0f, 0.0f, 0.0f };
 
-	MyVector3 newYellowBallPosition = { 300.0f, 200.0f, 0.0f };
-	MyVector3 yellowBallPosition = { 300.0f, 200.0f, 0.0f };
+	MyVector3 newYellowBallPosition = { 200.0f, 300.0f, 0.0f };
+	MyVector3 yellowBallPosition = { 200.0f, 300.0f, 0.0f };
 	MyVector3 yellowBallVelocity = { 0.0f, 0.0f, 0.0f };
 
 	MyVector3 pocketPositionOne = { 0,0,0 };
